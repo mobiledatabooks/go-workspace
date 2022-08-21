@@ -21,6 +21,15 @@ func main() { // Fetch prints the content found at each specified URL.
 
 	fmt.Println()
 
+	fmt.Println("fetcher.Fetch: Fetching URLs...") // print message to stdout
+	start = time.Now()                             // start a timer to measure the time it takes to fetch the URLs
+	for _, url := range os.Args[1:] {              // for each URL in the command line arguments
+		fetcher.Fetch(url) // fetch the URL and print the content
+	}
+	fmt.Printf("%.2fs elapsed\n", time.Since(start).Seconds()) // print the time elapsed since the start of the timer
+
+	fmt.Println()
+
 	fmt.Println("fetcher.FetchConcurrent: Fetching URLs...") // print message to stdout
 	start = time.Now()                                       // start a timer to measure the time it takes to fetch the URLs
 	ch := make(chan string)                                  // make a channel to receive the results of the fetching of the URLs in parallel (concurrent) and return the results to the channel
