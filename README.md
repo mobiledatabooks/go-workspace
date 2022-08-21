@@ -52,10 +52,11 @@ func main() {
 go run main.go https://golang.org http://gopl.io https://godoc.org
 ```
 
-```go
-//!+
+- The program starts with a channel ch of type string to receive the results of the fetching of the URLs in parallel (concurrent).
+- Then, for each URL in the command line arguments (concurrent), it starts a goroutine to fetch the URL and return the result to the channel.
+- Finally, for each URL in the command line arguments (concurrent) (wait for the results of the goroutines), it receives from channel ch and prints the result.
 
-// Fetchall fetches URLs in parallel and reports their times and sizes.
+```go
 package main
 
 import (
@@ -71,33 +72,13 @@ func main() {
 	start := time.Now()
 	ch := make(chan string)
 	for _, url := range os.Args[1:] {
-		go fetch(url, ch) // start a goroutine
+		go fetcher.FetchConcurrent(url, ch) // start a goroutine
 	}
 	for range os.Args[1:] {
 		fmt.Println(<-ch) // receive from channel ch
 	}
 	fmt.Printf("%.2fs elapsed\n", time.Since(start).Seconds())
 }
-
-func fetch(url string, ch chan<- string) {
-	start := time.Now()
-	resp, err := http.Get(url)
-	if err != nil {
-		ch <- fmt.Sprint(err) // send to channel ch
-		return
-	}
-
-	nbytes, err := io.Copy(ioutil.Discard, resp.Body)
-	resp.Body.Close() // don't leak resources
-	if err != nil {
-		ch <- fmt.Sprintf("while reading %s: %v", url, err)
-		return
-	}
-	secs := time.Since(start).Seconds()
-	ch <- fmt.Sprintf("%.2fs  %7d  %s", secs, nbytes, url)
-}
-
-//!-
 
 ```
 
