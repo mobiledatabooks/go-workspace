@@ -193,6 +193,7 @@ It creates go-fetch directory
 Add the module to the workspace
 ```go
 go work use ./go-fetch
+go work use ./go-fetch/fetcher
 ```
 
 The go work use command adds a new module to the go.work file. 
@@ -203,10 +204,11 @@ go.work
 use (
 	./fetchall
 	./go-fetch
+    ./go-fetch/fetcher
 )
 ```
 
-The module now includes both the mobiledatabooks.com/fetchall module and the github.com/mobiledatabooks/go-fetch/fetcher module.
+The module now includes both the mobiledatabooks.com/fetchall module, the github.com/mobiledatabooks/go-fetch module and the github.com/mobiledatabooks/go-fetch/fetcher module.
 
 ## Working with local copy
 
@@ -304,7 +306,7 @@ Run the code in the workspace
 From the workspace directory, run
 
 ```go
-go run main.go https://golang.org http://gopl.io https://godoc.org
+go run mobiledatabooks.com/fetchall  https://golang.org http://gopl.io https://godoc.org
 ```
 
 The Go command finds the mobiledatabooks.com/fetchall module specified in the command line in the fetchall directory specified by the go.work file, and similarly resolves the github.com/mobiledatabooks/go-fetch/fetcher import using the go.work file.
@@ -364,7 +366,30 @@ See Coding against an unpublished module for more about local development.
 3. When the module’s code is ready for other developers to try it out, 
 begin publishing v0 pre-releases such as alphas and betas. See Publishing pre-release versions for more.
 
-Note. Example from:
+go version reports the Go version used to build each executable file named on the command line.
+
+The -m flag causes go version to print each executable’s embedded module version information, when available. For each executable, go version -m prints a table with tab-separated columns like the one below.
+
+
+```bash
+go-workspace git:(main) ✗ go version -m .
+fetchall/fetchall: go1.19
+	path	command-line-arguments
+	dep	github.com/mobiledatabooks/go-fetch/fetcher	v0.0.0-20220821183956-22e7be266fcc	h1:xmpYSDV6Z+NUOcgY29EaUV72F/TxN9WrjNaJslrM5aA=
+	build	-compiler=gc
+	build	CGO_ENABLED=0
+	build	GOARCH=arm64
+	build	GOOS=darwin
+go-fetch/main: go1.19
+	path	command-line-arguments
+	dep	github.com/mobiledatabooks/go-fetch/fetcher	v0.0.0-20220821183956-22e7be266fcc	h1:xmpYSDV6Z+NUOcgY29EaUV72F/TxN9WrjNaJslrM5aA=
+	build	-compiler=gc
+	build	CGO_ENABLED=0
+	build	GOARCH=arm64
+	build	GOOS=darwin
+```
+
+The Go Programming Language is a book that provides an in-depth look at the Go programming language. The book also includes a number of code examples to illustrate various concepts.
 ```
 The Go Programming Language
 Alan A. A. Donovan
