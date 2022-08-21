@@ -3,6 +3,11 @@ If you're writing code in multiple modules at the same time, you can use multi-m
 
 In Go, a module is a collection of related Go source files located in a single directory. A workspace is a directory containing multiple modules. When you build a Go project, the build system reads the go.mod file in the project's root directory to determine which other modules the project depends on. The build system then downloads and installs any missing dependencies. 
 
+This article is a part of the series of books by [Constantine Vassil](https://www.amazon.com/Constantine-Vassil/e/B09Z9S1Y77/ref=aufs_dp_fta_dsk).
+
+
+In these hands on projects, you'll learn how to use Golang to develop applications quickly and effectively, both locally with multi-module workspaces and on Google Cloud. You'll get hands-on experience with the language, learning how to write code, debug applications, and deploy to the cloud. These quests will help you get started with using Golang on Google Cloud, and you'll be able to apply what you've learned to your own projects.
+
 ## Create the workspace folder:
 ```go
     mkdir go-workspace
