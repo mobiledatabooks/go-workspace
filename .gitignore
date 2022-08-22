@@ -28,5 +28,6 @@ key.json
 .golangci.yaml
 
 *.plantuml
+
 README.adoc
 # fetchall

@@ -1,0 +1,83 @@
+[plantuml]
+----
+@startuml
+start
+
+title Go (Golang) Multi-Module Workspaces: The Easy Way to Build and Run Code in Multiple Module: Part I
+
+package "Developer" {
+    #palegreen:1. Create the workspace folder;
+    -> go-workspace;
+    note left
+        mkdir go-workspace
+        cd go-workspace
+    end note
+    #palegreen:2. Create the main module;
+    -> fetchall;
+    note left
+        mkdir fetchall
+        cd fetchall
+    end note
+    #palegreen:3. Initialize the module;
+    -> go.mod;
+    note left
+        go mod init mobiledatabooks.com/fetchall
+
+        The resulting go.mod:
+            module mobiledatabooks.com/fetchall
+
+            go 1.19
+    end note
+    #palegreen:4. Create fetchall.go;
+    -> fetchall.go;
+    note left
+package main
+import (
+	"os"
+	"github.com/mobiledatabooks/go-fetch/fetcher"
+)
+
+func main() {
+	for _, url := range os.Args[1:] {
+		fetcher.FetchWithBuffer(url)
+	}
+}
+    end note
+
+    #palegreen:5. Add a module dependency;
+    -> go mod tidy;
+    note left
+        Add a dependency on the 
+        github.com/mobiledatabooks/go-fetch/fetcher 
+        module
+
+        The resulting go.mod:
+            module mobiledatabooks.com/fetchall
+
+            go 1.19
+
+            require github.com/mobiledatabooks/go-fetch/fetcher 
+            v0.0.0-20220821205820-5b3e6cfec1a4
+
+    end note
+
+    #palegreen:6. Now, run the main program;
+    -> go run main.go;
+    note left
+go run fetchall.go \
+https://golang.org  \
+http://gopl.io  \
+https://godoc.org
+
+fetcher.FetchWithBuffer: Fetching URLs...
+HTTP status: 200 OK
+HTTP status: 200 OK
+HTTP status: 200 OK
+3.03s elapsed
+    end note
+
+
+}
+stop
+@enduml
+----

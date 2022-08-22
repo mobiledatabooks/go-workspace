@@ -8,8 +8,7 @@ In Go, a module is a collection of related Go source files located in a single d
 Workflows
 Making Changes in One Module that Requires Changes in Another Module. How to add a feature in an upstream module and make use of the feature in your own module
 
-A user wants to add a feature in an upstream module and make use of the feature in their own module. They open the two modules in their editor through gopls, which creates a supermodule requiring and replacing both of the modules. The editor tooling and builds done through the editor will use the build list from the supermodule, but the user will not have access to the supermodule outside their editor. The user can change their go.mod to add a replace, which will be reflected in both the editor and their go command invocations, but this is a change they will need to
-
+The user wants to add a feature in an upstream module and make use of the feature in their own module. They open the two modules in their editor through gopls, which creates a supermodule requiring and replacing both of the modules. The editor tooling and builds done through the editor will use the build list from the supermodule, but the user will not have access to the supermodule outside their editor. The user can change their go.mod to add a replace, which will be reflected in both the editor and their go command invocations, but this is a change they will need to remember to make every time they want to use the feature.
 
 The Benefits of Using Multiple Modules in the Same Repository
 
@@ -28,25 +27,33 @@ This article is a part of the series of books by [Constantine Vassil](https://ww
 
 In these hands on projects, you'll learn how to use Golang to develop applications quickly and effectively, both locally with multi-module workspaces and on Google Cloud. You'll get hands-on experience with the language, learning how to write code, debug applications, and deploy to the cloud. These quests will help you get started with using Golang on Google Cloud, and you'll be able to apply what you've learned to your own projects.
 
-## Create the workspace folder:
+![alt text](./diagram1.png)
+## 1. Create the workspace folder:
 ```go
     mkdir go-workspace
     cd go-workspace
 ```
 
-## Create the main module. Initialize the module:
+## 2. Create the main module. 
 ```go
 mkdir fetchall
 cd fetchall
+```
+
+## 3. Initialize the module.
+```go
 go mod init mobiledatabooks.com/fetchall
 ```
+The resulting go.mod:
 
-## Create go.mod. Add a dependency on the github.com/mobiledatabooks/go-fetch/fetcher module by using:
 ```go
-go mod tidy
+module mobiledatabooks.com/fetchall
+
+go 1.19
+
 ```
 
-## Create fetchall.go in the fetchall directory with the following contents:
+## 4. Create fetchall.go in the fetchall directory with the following contents:
 
 ```go
 touch fetchall.go
@@ -63,62 +70,40 @@ import (
 
 func main() {
 	for _, url := range os.Args[1:] {
-		fetcher.Fetch(url)
+		fetcher.FetchWithBuffer(url)
 	}
 }
 ```
 
+##  5.Add a dependency on the github.com/mobiledatabooks/go-fetch/fetcher module by using:
 ```go
-go run main.go https://golang.org http://gopl.io https://godoc.org
+go mod tidy
 ```
 
-- The program starts with a channel ch of type string to receive the results of the fetching of the URLs in parallel (concurrent).
-- Then, for each URL in the command line arguments (concurrent), it starts a goroutine to fetch the URL and return the result to the channel.
-- Finally, for each URL in the command line arguments (concurrent) (wait for the results of the goroutines), it receives from channel ch and prints the result.
+The resulting go.mod:
 
 ```go
-package main
+module mobiledatabooks.com/fetchall
 
-import (
-	"fmt"
-	"io"
-	"io/ioutil"
-	"net/http"
-	"os"
-	"time"
-)
+go 1.19
 
-func main() {
-	start := time.Now()
-	ch := make(chan string)
-	for _, url := range os.Args[1:] {
-		go fetcher.FetchConcurrent(url, ch) // start a goroutine
-	}
-	for range os.Args[1:] {
-		fmt.Println(<-ch) // receive from channel ch
-	}
-	fmt.Printf("%.2fs elapsed\n", time.Since(start).Seconds())
-}
-
+require github.com/mobiledatabooks/go-fetch/fetcher v0.0.0-20220821205820-5b3e6cfec1a4
 ```
+
+## 6. Now, run the main program
 
 ```go
-go build -v *.go
-```
-## Now, run the main program:
+go run fetchall.go https://golang.org http://gopl.io https://godoc.org
 
-```go
-./fetchall https://golang.org http://gopl.io https://godoc.org
-
-0.68s     4154  http://gopl.io
-0.78s    17461  https://godoc.org
-1.29s    59769  https://golang.org
-1.29s elapsed
-
+fetcher.FetchWithBuffer: Fetching URLs...
+HTTP status: 200 OK
+HTTP status: 200 OK
+HTTP status: 200 OK
+3.03s elapsed
 
 ```
-
-## Create the workspace
+![alt text](./diagram2.png)
+## 7. Create the workspace
 
 In this step, we’ll create a go.work file to specify a workspace with the module.
 
@@ -149,7 +134,7 @@ should be main modules when doing a build.
 
 So in any subdirectory of workspace the module will be active.
 
-## Run the program in the workspace directory
+## 8. Run the program in the workspace directory
 
 In the workspace directory, run:
 
@@ -176,7 +161,7 @@ In this step, we’ll download a copy of the Git repo containing the
 github.com/mobiledatabooks/go-fetch module, add it to the workspace, and then add a new function to it that we will use from the main program.
 
 
-### Clone the repository
+### 9. Clone the repository
 
 ```go
 cd go-workspace
@@ -190,7 +175,7 @@ git clone https://github.com/mobiledatabooks/go-fetch.git
 It creates go-fetch directory
 ```go
 
-➜  go-workspace git:(main) ✗ 
+➜  go-workspace git:(main) ✗ tree
 .
 ├── LICENSE
 ├── README.md
@@ -202,15 +187,19 @@ It creates go-fetch directory
 │   ├── LICENSE
 │   ├── README.md
 │   ├── fetcher
-│   │   ├── fetcher.go
+│   │   ├── fetch.go
+│   │   ├── fetchConcurrent.go
+│   │   ├── fetchWithBuffer.go
 │   │   └── go.mod
 │   ├── go.mod
-│   └── main.go
+│   ├── go.sum
+│   ├── main
+│   ├── main.go
 ├── go.work
-
+├── go.work.sum
 ```
 
-Add the module to the workspace
+### 10. Add the module to the workspace
 ```go
 go work use ./go-fetch
 go work use ./go-fetch/fetcher
@@ -230,17 +219,26 @@ use (
 
 The module now includes both the mobiledatabooks.com/fetchall module, the github.com/mobiledatabooks/go-fetch module and the github.com/mobiledatabooks/go-fetch/fetcher module.
 
-## Working with local copy
+![alt text](./diagram3.png)
+## Working with the local copy
 
 This will allow us to use the new code we will write in our copy of 
 the stringutil module instead of the version of the module in the 
 module cache that we downloaded with the go get command.
 
-### Add the new function.
+### 12. Add the new function.
 
 We’ll add a new function to fetch concurrently to the github.com/mobiledatabooks/go-fetch/fetcher package.
 
 Create a new file named fetchConcurrent.go in the go-workspace/go-fetch/fetcher directory containing the following contents:
+
+
+## Add concurrency
+
+- The program starts with a channel ch of type string to receive the results of the fetching of the URLs in parallel (concurrent).
+- Then, for each URL in the command line arguments (concurrent), it starts a goroutine to fetch the URL and return the result to the channel.
+- Finally, for each URL in the command line arguments (concurrent) (wait for the results of the goroutines), it receives from channel ch and prints the result.
+
 
 ```go
 // Fetch prints the content found at each specified URL.
@@ -277,7 +275,7 @@ func FetchConcurrent(url string, ch chan<- string) {
 
 ```
 
-### Modify the main program to use the function.
+### 13. Modify the main program to use the function.
 
 Modify the contents of go-workspace/fetchall/fetchall.go to contain the following contents:
 
@@ -321,7 +319,17 @@ func main() {
 
 ```
 
-Run the code in the workspace
+### 14. Modify the fetchall/go.mod to use the local module.
+remove require github.com/mobiledatabooks/go-fetch/fetcher v0.0.0-20220821205820-5b3e6cfec1a4
+
+
+```go
+module mobiledatabooks.com/fetchall
+
+go 1.19
+```
+
+### 15. Run the code in the workspace
 
 From the workspace directory, run
 
