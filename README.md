@@ -223,7 +223,7 @@ The module now includes both the mobiledatabooks.com/fetchall module, the github
 ## Working with the local copy
 
 This will allow us to use the new code we will write in our copy of 
-the stringutil module instead of the version of the module in the 
+the module instead of the version of the module in the 
 module cache that we downloaded with the go get command.
 
 ### 12. Add the new function.
