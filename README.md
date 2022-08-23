@@ -6,7 +6,7 @@ If you're writing code in multiple modules at the same time, you can use multi-m
 In Go, a module is a collection of related Go source files located in a single directory. A workspace is a directory containing multiple modules. When you build a Go project, the build system reads the go.mod file in the project's root directory to determine which other modules the project depends on. The build system then downloads and installs any missing dependencies. 
 
 ## Workflows
-Making Changes in One Module that Requires Changes in Another Module. How to add a feature in an upstream module and make use of the feature in your own module
+### Making Changes in One Module that Requires Changes in Another Module. How to add a feature in an upstream module and make use of the feature in your own module
 
 The user wants to add a feature in an upstream module and make use of the feature in their own module. They open the two modules in their editor through gopls, which creates a supermodule requiring and replacing both of the modules. The editor tooling and builds done through the editor will use the build list from the supermodule, but the user will not have access to the supermodule outside their editor. The user can change their go.mod to add a replace, which will be reflected in both the editor and their go command invocations, but this is a change they will need to remember to make every time they want to use the feature.
 
