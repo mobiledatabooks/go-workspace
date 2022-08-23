@@ -28,19 +28,19 @@ This article is a part of the series of books by [Constantine Vassil](https://ww
 In these hands on projects, you'll learn how to use Golang to develop applications quickly and effectively, both locally with multi-module workspaces and on Google Cloud. You'll get hands-on experience with the language, learning how to write code, debug applications, and deploy to the cloud. These quests will help you get started with using Golang on Google Cloud, and you'll be able to apply what you've learned to your own projects.
 
 ![alt text](./diagram1.png)
-## 1. Create the workspace folder:
+### 1. Create the workspace folder:
 ```go
     mkdir go-workspace
     cd go-workspace
 ```
 
-## 2. Create the main module. 
+### 2. Create the main module. 
 ```go
 mkdir fetchall
 cd fetchall
 ```
 
-## 3. Initialize the module.
+### 3. Initialize the module.
 ```go
 go mod init mobiledatabooks.com/fetchall
 ```
@@ -53,7 +53,7 @@ go 1.19
 
 ```
 
-## 4. Create fetchall.go in the fetchall directory with the following contents:
+### 4. Create fetchall.go in the fetchall directory with the following contents:
 
 ```go
 touch fetchall.go
@@ -75,7 +75,7 @@ func main() {
 }
 ```
 
-##  5.Add a dependency on the github.com/mobiledatabooks/go-fetch/fetcher module by using:
+### 5. Add a dependency on the github.com/mobiledatabooks/go-fetch/fetcher module by using:
 ```go
 go mod tidy
 ```
@@ -90,7 +90,7 @@ go 1.19
 require github.com/mobiledatabooks/go-fetch/fetcher v0.0.0-20220821205820-5b3e6cfec1a4
 ```
 
-## 6. Now, run the main program
+### 6. Now, run the main program
 
 ```go
 go run fetchall.go https://golang.org http://gopl.io https://godoc.org
@@ -103,7 +103,7 @@ HTTP status: 200 OK
 
 ```
 ![alt text](./diagram2.png)
-## 7. Create the workspace
+### 7. Create the workspace
 
 In this step, we’ll create a go.work file to specify a workspace with the module.
 
@@ -134,7 +134,7 @@ should be main modules when doing a build.
 
 So in any subdirectory of workspace the module will be active.
 
-## 8. Run the program in the workspace directory
+### 8. Run the program in the workspace directory
 
 In the workspace directory, run:
 
